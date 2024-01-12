@@ -18,12 +18,8 @@ def process_file(path: str, label: str):
     with open(path, 'r') as file:
         content = file.read()
         content = re.sub(r'\d+', '', content)
-        if label == 'spam':
-            counter_spam.update(set(analyzer(content)))
-        else:
-            counter_clean.update(set(analyzer(content)))
 
-    return (counter_clean, counter_spam)
+    return set(analyzer(content))
 
 class Dataset:
     def __init__(self, path: str) -> None:
@@ -34,17 +30,20 @@ class Dataset:
         self.counter_clean = Counter()
         self.spam_total = 0
         self.clean_total = 0
+        self.emails = list()
         for dirpath, dirnames, filenames in os.walk(path):
             #print os.path.join(subdir, file)
             for file in filenames:
                 p = os.path.join(dirpath, file)
                 if p.endswith(".txt"):
                     if file.startswith('spm'):
-                        self.counter_spam.update(process_file(p, 'spam')[1])
-                        self.spam_total += 1
+                        self.emails.append([process_file(p, 'spam'), 'spam'])
+                        #self.counter_spam.update(process_file(p, 'spam')[1])
+                        #self.spam_total += 1
                     else:
-                        self.counter_clean.update(process_file(p, 'clean')[0])
-                        self.clean_total += 1
+                        self.emails.append([process_file(p, 'clean'), 'clean'])
+                        #self.counter_clean.update(process_file(p, 'clean')[0])
+                        #self.clean_total += 1
                         #print (f"{filepath} -> {len(set(self.analyzer(content)))}")
                         
 class Datasetz:

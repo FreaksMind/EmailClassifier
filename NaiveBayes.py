@@ -1,9 +1,10 @@
 import math
+from collections import Counter
 
 class NaiveBayes:
     def __init__(self) -> None:
-        self.spam_words = None
-        self.clean_words = None
+        self.spam_words = Counter()
+        self.clean_words = Counter()
         self.spam_total = 0
         self.clean_total = 0
         self.spam_class_prob = 0
@@ -11,13 +12,17 @@ class NaiveBayes:
         self.spam_words_prob = dict()
         self.clean_words_prob = dict()
 
-    def train(self, clean_words: dict, clean_total: int, spam_words: dict, spam_total: int):
-        self.clean_words = clean_words
-        self.spam_words = spam_words
-        self.clean_total = clean_total
-        self.spam_total = spam_total
-        self.spam_class_prob = math.log(spam_total / (spam_total + clean_total))
-        self.clean_class_prob = math.log(clean_total / (spam_total + clean_total))
+    def train(self, emails):
+        for email in emails:
+            if email[1] == 'spam':
+                self.spam_words.update(email[0])
+                self.spam_total += 1
+            else:
+                self.clean_words.update(email[0])
+                self.clean_total += 1
+
+        self.spam_class_prob = math.log(self.spam_total / (self.spam_total + self.clean_total))
+        self.clean_class_prob = math.log(self.clean_total / (self.spam_total + self.clean_total))
 
         self.calculate_probabilities()
 
